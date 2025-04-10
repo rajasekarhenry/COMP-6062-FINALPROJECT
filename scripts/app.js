@@ -1,6 +1,5 @@
 
 const app = Vue.createApp({
-    
     data() {
         return {
             myFullName: 'Rohan Rajasekar Henry',
