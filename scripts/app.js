@@ -1,4 +1,3 @@
-
 const app = Vue.createApp({
     data() {
         return {
@@ -26,6 +25,11 @@ const app = Vue.createApp({
             }
         };
     },
+    computed: {
+        fullName() {
+            return this.user.name ? this.user.name : this.myFullName;
+        }
+    },
     mounted() {
         this.getUserProfile();
         this.getWeather();
@@ -37,28 +41,32 @@ const app = Vue.createApp({
                 .then(data => {
                     this.user.name = data.first_name + ' ' + data.last_name;
                     this.user.age = data.age;
-                    this.user.photo = data.photo;
+                    this.user.photo = data.profile_picture;
                 });
         },
         getWeather() {
-            const url = `http://comp6062.liamstewart.ca/weather-information?city=${this.weatherInput.city}&province=${this.weatherInput.province}&country=${this.weatherInput.country}`;
+            const { city, province, country } = this.weatherInput;
+            const url = `http://comp6062.liamstewart.ca/weather-information?city=${city}&province=${province}&country=${country}`;
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     this.weather.temperature = data.temperature;
-                    this.weather.wind = data.wind;
-                    this.weather.description = data.description;
+                    this.weather.wind = data.wind_speed;
+                    this.weather.description = data.weather_description;
                 });
         },
         getDefinition() {
-            fetch(`https://comp6062.liamstewart.ca/define?word=${this.dictionaryInput}`)
+            const url = `https://comp6062.liamstewart.ca/define?word=${this.dictionaryInput}`;
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    this.dictionary.word = data.word;
-                    this.dictionary.phonetic = data.phonetic;
-                    this.dictionary.definition = data.definition;
+                    const result = data[0];
+                    this.dictionary.word = result.word;
+                    this.dictionary.phonetic = result.phonetic;
+                    this.dictionary.definition = result.definition;
                 });
         }
     }
 });
+
 app.mount('#app');
